@@ -35,7 +35,7 @@ export default function Home() {
 
         {/* Restart */}
         <button className="mt-6 w-full bg-green-900 hover:bg-green-700 text-white  px-4 py-3 rounded-xl font-semibold">
-          Restart Game
+          Start Test
         </button>
       </section>
     </main>

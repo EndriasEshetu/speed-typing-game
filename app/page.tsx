@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { paragraphs } from "../data/paragraphs";
 
 type Mode = "easy" | "medium" | "hard";
@@ -15,16 +15,42 @@ export default function Home() {
   const [currentText, setCurrentText] = useState(() => getRandomText("easy"));
   const [userInput, setUserInput] = useState("");
 
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [isRunning, setIsRunning] = useState(false);
+  // derive finished state from timeLeft instead of separate state
+
+  useEffect(() => {
+    if (!isRunning || timeLeft <= 0) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isRunning, timeLeft]);
+
+  useEffect(() => {
+    // no synchronous setState here; finished is derived from timeLeft
+  }, [timeLeft]);
+
   const handleModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedMode = e.target.value as Mode;
 
     setMode(selectedMode);
     setCurrentText(getRandomText(selectedMode));
-    setUserInput("");
+    resetGame();
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isRunning) setIsRunning(true);
+
     setUserInput(e.target.value);
+  };
+
+  const resetGame = () => {
+    setUserInput("");
+    setTimeLeft(60);
+    setIsRunning(false);
   };
 
   const renderColoredText = () => {
@@ -63,7 +89,7 @@ export default function Home() {
           </select>
 
           <div className="flex gap-6 text-lg">
-            <p>Time: 60</p>
+            <p>Time: {timeLeft}</p>
             <p>WPM: 0</p>
             <p>Accuracy: 0%</p>
           </div>
@@ -79,13 +105,14 @@ export default function Home() {
           type="text"
           value={userInput}
           onChange={handleInputChange}
-          placeholder="Start typing here..."
-          className="w-full bg-slate-300 px-4 py-3 rounded-xl outline-none text-lg"
+          disabled={timeLeft === 0}
+          placeholder={timeLeft === 0 ? "Time is up!" : "Start typing here..."}
+          className="w-full bg-slate-300 px-4 py-3 rounded-xl outline-none text-lg disabled:opacity-50"
         />
 
         {/* Restart */}
         <button
-          onClick={() => setUserInput("")}
+          onClick={resetGame}
           className="mt-6 w-full bg-green-900 hover:bg-green-700 text-white px-4 py-3 rounded-xl font-semibold"
         >
           Restart Test

@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { paragraphs } from "../data/paragraphs";
+import Header from "../components/Header";
+import Stats from "../components/Stats";
+import TypingArea from "../components/TypingArea";
+import ResultCard from "../components/ResultCard";
 
 type Mode = "easy" | "medium" | "hard";
 
@@ -12,26 +16,23 @@ function getRandomText(mode: Mode) {
 
 export default function Home() {
   const [mode, setMode] = useState<Mode>("easy");
-  const [currentText, setCurrentText] = useState(() => getRandomText("easy"));
+  const [currentText, setCurrentText] = useState(() => paragraphs.easy[0]);
   const [userInput, setUserInput] = useState("");
 
   const [timeLeft, setTimeLeft] = useState(60);
   const [isRunning, setIsRunning] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
 
-  // Timer logic
   useEffect(() => {
     if (!isRunning) return;
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          // Stop the game when timer reaches 0 from within the updater
           setIsRunning(false);
           setIsFinished(true);
           return 0;
         }
-
         return prev - 1;
       });
     }, 1000);
@@ -39,7 +40,6 @@ export default function Home() {
     return () => clearInterval(timer);
   }, [isRunning]);
 
-  // Performance calculations
   const correctChars = currentText
     .split("")
     .filter((char, index) => userInput[index] === char).length;
@@ -54,12 +54,19 @@ export default function Home() {
       ? Math.round((correctChars / userInput.length) * 100)
       : 0;
 
+  const resetGame = (nextMode: Mode = mode) => {
+    setUserInput("");
+    setTimeLeft(60);
+    setIsRunning(false);
+    setIsFinished(false);
+    setCurrentText(getRandomText(nextMode));
+  };
+
   const handleModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedMode = e.target.value as Mode;
 
     setMode(selectedMode);
-    setCurrentText(getRandomText(selectedMode));
-    resetGame();
+    resetGame(selectedMode);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,96 +74,46 @@ export default function Home() {
 
     setUserInput(e.target.value);
 
-    // If user finishes paragraph before timer ends
     if (e.target.value === currentText) {
       setIsRunning(false);
       setIsFinished(true);
     }
   };
 
-  const resetGame = () => {
-    setUserInput("");
-    setTimeLeft(60);
-    setIsRunning(false);
-    setIsFinished(false);
-    setCurrentText(getRandomText(mode));
-  };
-
-  const renderColoredText = () => {
-    return currentText.split("").map((char, index) => {
-      let color = "text-gray-500";
-
-      if (index < userInput.length) {
-        color = userInput[index] === char ? "text-green-600" : "text-red-600";
-      }
-
-      return (
-        <span key={index} className={color}>
-          {char}
-        </span>
-      );
-    });
-  };
-
   return (
-    <main className="min-h-screen bg-slate-300 text-black flex items-center justify-center px-4">
-      <section className="w-full max-w-4xl bg-white rounded-2xl shadow-xl p-8">
-        <h1 className="text-4xl text-green-600 font-bold text-center mb-8">
-          Speed Typing Game
-        </h1>
+    <main className="min-h-screen bg-slate-200 flex items-center justify-center px-4 py-10">
+      <section className="w-full max-w-4xl bg-white rounded-3xl shadow-xl p-8">
+        <Header />
 
-        {/* Controls */}
-        <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-8">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
           <select
             value={mode}
             onChange={handleModeChange}
-            className="bg-slate-300 px-4 py-2 rounded-lg outline-none"
+            className="bg-slate-200 px-4 py-2 rounded-xl outline-none"
           >
             <option value="easy">Easy</option>
             <option value="medium">Medium</option>
             <option value="hard">Hard</option>
           </select>
 
-          <div className="flex gap-6 text-lg font-medium">
-            <p>Time: {timeLeft}</p>
-            <p>WPM: {wpm}</p>
-            <p>Accuracy: {accuracy}%</p>
-          </div>
+          <Stats timeLeft={timeLeft} wpm={wpm} accuracy={accuracy} />
         </div>
 
-        {/* Typing text */}
-        <div className="bg-slate-300 p-6 rounded-xl mb-6 leading-8 text-lg min-h-[120px]">
-          {renderColoredText()}
-        </div>
-
-        {/* Input */}
-        <input
-          type="text"
-          value={userInput}
+        <TypingArea
+          currentText={currentText}
+          userInput={userInput}
           onChange={handleInputChange}
-          disabled={isFinished}
-          placeholder={isFinished ? "Test finished!" : "Start typing here..."}
-          className="w-full bg-slate-300 px-4 py-3 rounded-xl outline-none text-lg disabled:opacity-50"
+          isFinished={isFinished}
         />
 
-        {/* Restart */}
         <button
-          onClick={resetGame}
-          className="mt-6 w-full bg-green-900 hover:bg-green-700 text-white px-4 py-3 rounded-xl font-semibold"
+          onClick={() => resetGame()}
+          className="mt-6 w-full bg-green-700 hover:bg-green-800 text-white px-4 py-3 rounded-xl font-semibold transition"
         >
           Restart Test
         </button>
 
-        {/* Game Over Message */}
-        {isFinished && (
-          <div className="mt-6 text-center">
-            <h2 className="text-2xl font-bold text-green-700">
-              Test Completed 🎉
-            </h2>
-            <p className="mt-2">Final WPM: {wpm}</p>
-            <p>Final Accuracy: {accuracy}%</p>
-          </div>
-        )}
+        {isFinished && <ResultCard wpm={wpm} accuracy={accuracy} />}
       </section>
     </main>
   );

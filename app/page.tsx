@@ -81,15 +81,15 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-200 flex items-center justify-center px-4 py-10">
-      <section className="w-full max-w-4xl bg-white rounded-3xl shadow-xl p-8">
+    <main className="min-h-screen bg-[#496781] flex items-center justify-center px-4 py-10">
+      <section className="w-full max-w-4xl bg-[#203547] rounded-3xl shadow-xl p-8">
         <Header />
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
           <select
             value={mode}
             onChange={handleModeChange}
-            className="bg-slate-200 px-4 py-2 rounded-xl outline-none"
+            className="rounded-md border border-slate-700 bg-[#22384b] px-4 py-2 text-white shadow-[0_0_12px_rgba(0,0,0,0.5)]"
           >
             <option value="easy">Easy</option>
             <option value="medium">Medium</option>
@@ -108,7 +108,7 @@ export default function Home() {
 
         <button
           onClick={() => resetGame()}
-          className="mt-6 w-full bg-green-700 hover:bg-green-800 text-white px-4 py-3 rounded-xl font-semibold transition"
+          className="mt-6 w-full bg-[#22384b] hover:bg-[#496781] text-white px-4 py-3 rounded-xl font-semibold transition shadow-[0_0_24px_rgba(0,0,0,0.5)]"
         >
           Restart Test
         </button>

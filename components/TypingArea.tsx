@@ -28,8 +28,8 @@ export default function TypingArea({
   };
 
   return (
-    <div>
-      <div className="bg-slate-200 p-6 rounded-2xl mb-6 leading-8 text-lg min-h-auto">
+    <div className="flex flex-col gap-6">
+      <div className="rounded-md border border-slate-700 bg-[#22384b] px-6 md:px-10 py-8 md:py-10 text-center text-white text-xl md:text-3xl font-medium shadow-[0_0_24px_rgba(0,0,0,0.5)]">
         {renderColoredText()}
       </div>
 
@@ -39,7 +39,7 @@ export default function TypingArea({
         onChange={onChange}
         disabled={isFinished}
         placeholder={isFinished ? "Test finished!" : "Start typing here..."}
-        className="w-full bg-slate-200 px-4 py-3 rounded-xl outline-none text-lg disabled:opacity-50"
+        className="rounded-md border border-slate-700 bg-[#22384b] px-6 md:px-10 py-8 md:py-10 text-white text-xl md:text-3xl shadow-[0_0_24px_rgba(0,0,0,0.5)]"
       />
     </div>
   );

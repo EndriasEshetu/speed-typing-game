@@ -17,21 +17,42 @@ export default function Home() {
 
   const [timeLeft, setTimeLeft] = useState(60);
   const [isRunning, setIsRunning] = useState(false);
-  // derive finished state from timeLeft instead of separate state
+  const [isFinished, setIsFinished] = useState(false);
 
+  // Timer logic
   useEffect(() => {
-    if (!isRunning || timeLeft <= 0) return;
+    if (!isRunning) return;
 
     const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          // Stop the game when timer reaches 0 from within the updater
+          setIsRunning(false);
+          setIsFinished(true);
+          return 0;
+        }
+
+        return prev - 1;
+      });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isRunning, timeLeft]);
+  }, [isRunning]);
 
-  useEffect(() => {
-    // no synchronous setState here; finished is derived from timeLeft
-  }, [timeLeft]);
+  // Performance calculations
+  const correctChars = currentText
+    .split("")
+    .filter((char, index) => userInput[index] === char).length;
+
+  const timeElapsed = 60 - timeLeft;
+
+  const wpm =
+    timeElapsed > 0 ? Math.round((correctChars / 5 / timeElapsed) * 60) : 0;
+
+  const accuracy =
+    userInput.length > 0
+      ? Math.round((correctChars / userInput.length) * 100)
+      : 0;
 
   const handleModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedMode = e.target.value as Mode;
@@ -45,12 +66,20 @@ export default function Home() {
     if (!isRunning) setIsRunning(true);
 
     setUserInput(e.target.value);
+
+    // If user finishes paragraph before timer ends
+    if (e.target.value === currentText) {
+      setIsRunning(false);
+      setIsFinished(true);
+    }
   };
 
   const resetGame = () => {
     setUserInput("");
     setTimeLeft(60);
     setIsRunning(false);
+    setIsFinished(false);
+    setCurrentText(getRandomText(mode));
   };
 
   const renderColoredText = () => {
@@ -76,7 +105,7 @@ export default function Home() {
           Speed Typing Game
         </h1>
 
-        {/* Top Controls */}
+        {/* Controls */}
         <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-8">
           <select
             value={mode}
@@ -88,14 +117,14 @@ export default function Home() {
             <option value="hard">Hard</option>
           </select>
 
-          <div className="flex gap-6 text-lg">
+          <div className="flex gap-6 text-lg font-medium">
             <p>Time: {timeLeft}</p>
-            <p>WPM: 0</p>
-            <p>Accuracy: 0%</p>
+            <p>WPM: {wpm}</p>
+            <p>Accuracy: {accuracy}%</p>
           </div>
         </div>
 
-        {/* Typing Text */}
+        {/* Typing text */}
         <div className="bg-slate-300 p-6 rounded-xl mb-6 leading-8 text-lg min-h-[120px]">
           {renderColoredText()}
         </div>
@@ -105,8 +134,8 @@ export default function Home() {
           type="text"
           value={userInput}
           onChange={handleInputChange}
-          disabled={timeLeft === 0}
-          placeholder={timeLeft === 0 ? "Time is up!" : "Start typing here..."}
+          disabled={isFinished}
+          placeholder={isFinished ? "Test finished!" : "Start typing here..."}
           className="w-full bg-slate-300 px-4 py-3 rounded-xl outline-none text-lg disabled:opacity-50"
         />
 
@@ -117,6 +146,17 @@ export default function Home() {
         >
           Restart Test
         </button>
+
+        {/* Game Over Message */}
+        {isFinished && (
+          <div className="mt-6 text-center">
+            <h2 className="text-2xl font-bold text-green-700">
+              Test Completed 🎉
+            </h2>
+            <p className="mt-2">Final WPM: {wpm}</p>
+            <p>Final Accuracy: {accuracy}%</p>
+          </div>
+        )}
       </section>
     </main>
   );

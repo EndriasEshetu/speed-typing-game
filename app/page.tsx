@@ -12,9 +12,36 @@ function getRandomText(mode: Mode) {
 
 export default function Home() {
   const [mode, setMode] = useState<Mode>("easy");
-  const [currentText, setCurrentText] = useState(() =>
-    getRandomText("easy" as Mode),
-  );
+  const [currentText, setCurrentText] = useState(() => getRandomText("easy"));
+  const [userInput, setUserInput] = useState("");
+
+  const handleModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedMode = e.target.value as Mode;
+
+    setMode(selectedMode);
+    setCurrentText(getRandomText(selectedMode));
+    setUserInput("");
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserInput(e.target.value);
+  };
+
+  const renderColoredText = () => {
+    return currentText.split("").map((char, index) => {
+      let color = "text-gray-500";
+
+      if (index < userInput.length) {
+        color = userInput[index] === char ? "text-green-600" : "text-red-600";
+      }
+
+      return (
+        <span key={index} className={color}>
+          {char}
+        </span>
+      );
+    });
+  };
 
   return (
     <main className="min-h-screen bg-slate-300 text-black flex items-center justify-center px-4">
@@ -27,11 +54,7 @@ export default function Home() {
         <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-8">
           <select
             value={mode}
-            onChange={(e) => {
-              const m = e.target.value as Mode;
-              setMode(m);
-              setCurrentText(getRandomText(m));
-            }}
+            onChange={handleModeChange}
             className="bg-slate-300 px-4 py-2 rounded-lg outline-none"
           >
             <option value="easy">Easy</option>
@@ -47,20 +70,25 @@ export default function Home() {
         </div>
 
         {/* Typing Text */}
-        <div className="bg-slate-300 p-6 rounded-xl mb-6 leading-8 text-lg">
-          {currentText}
+        <div className="bg-slate-300 p-6 rounded-xl mb-6 leading-8 text-lg min-h-[120px]">
+          {renderColoredText()}
         </div>
 
         {/* Input */}
         <input
           type="text"
+          value={userInput}
+          onChange={handleInputChange}
           placeholder="Start typing here..."
           className="w-full bg-slate-300 px-4 py-3 rounded-xl outline-none text-lg"
         />
 
         {/* Restart */}
-        <button className="mt-6 w-full bg-green-900 hover:bg-green-700 text-white  px-4 py-3 rounded-xl font-semibold">
-          Start Test
+        <button
+          onClick={() => setUserInput("")}
+          className="mt-6 w-full bg-green-900 hover:bg-green-700 text-white px-4 py-3 rounded-xl font-semibold"
+        >
+          Restart Test
         </button>
       </section>
     </main>

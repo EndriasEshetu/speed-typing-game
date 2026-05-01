@@ -1,4 +1,21 @@
+"use client";
+
+import { useState } from "react";
+import { paragraphs } from "../data/paragraphs";
+
+type Mode = "easy" | "medium" | "hard";
+
+function getRandomText(mode: Mode) {
+  const randomIndex = Math.floor(Math.random() * paragraphs[mode].length);
+  return paragraphs[mode][randomIndex];
+}
+
 export default function Home() {
+  const [mode, setMode] = useState<Mode>("easy");
+  const [currentText, setCurrentText] = useState(() =>
+    getRandomText("easy" as Mode),
+  );
+
   return (
     <main className="min-h-screen bg-slate-300 text-black flex items-center justify-center px-4">
       <section className="w-full max-w-4xl bg-white rounded-2xl shadow-xl p-8">
@@ -8,10 +25,18 @@ export default function Home() {
 
         {/* Top Controls */}
         <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-8">
-          <select className="bg-slate-300 px-4 py-2 rounded-lg outline-none">
-            <option>Easy</option>
-            <option>Medium</option>
-            <option>Hard</option>
+          <select
+            value={mode}
+            onChange={(e) => {
+              const m = e.target.value as Mode;
+              setMode(m);
+              setCurrentText(getRandomText(m));
+            }}
+            className="bg-slate-300 px-4 py-2 rounded-lg outline-none"
+          >
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
           </select>
 
           <div className="flex gap-6 text-lg">
@@ -23,7 +48,7 @@ export default function Home() {
 
         {/* Typing Text */}
         <div className="bg-slate-300 p-6 rounded-xl mb-6 leading-8 text-lg">
-          The quick brown fox jumps over the lazy dog.
+          {currentText}
         </div>
 
         {/* Input */}

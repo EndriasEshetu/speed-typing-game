@@ -1,22 +1,25 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { paragraphs } from "../data/paragraphs";
+import { testData } from "../data/paragraphs";
 import Header from "../components/Header";
 import Stats from "../components/Stats";
 import TypingArea from "../components/TypingArea";
 import ResultCard from "../components/ResultCard";
 
+type Category = "text" | "numbers" | "emojis";
 type Mode = "easy" | "medium" | "hard";
 
-function getRandomText(mode: Mode) {
-  const randomIndex = Math.floor(Math.random() * paragraphs[mode].length);
-  return paragraphs[mode][randomIndex];
+function getRandomText(category: Category, mode: Mode) {
+  const arr = testData[category][mode];
+  const randomIndex = Math.floor(Math.random() * arr.length);
+  return arr[randomIndex];
 }
 
 export default function Home() {
+  const [category, setCategory] = useState<Category>("text");
   const [mode, setMode] = useState<Mode>("easy");
-  const [currentText, setCurrentText] = useState(() => paragraphs.easy[0]);
+  const [currentText, setCurrentText] = useState(() => testData.text.easy[0]);
   const [userInput, setUserInput] = useState("");
 
   const [timeLeft, setTimeLeft] = useState(60);
@@ -78,13 +81,13 @@ export default function Home() {
     }
   }
 
-  const resetGame = (nextMode: Mode = mode) => {
+  const resetGame = (nextCategory: Category = category, nextMode: Mode = mode) => {
     setUserInput("");
     setTimeLeft(60);
     setIsRunning(false);
     setIsFinished(false);
     setHasStarted(false);
-    setCurrentText(getRandomText(nextMode));
+    setCurrentText(getRandomText(nextCategory, nextMode));
   };
 
   const startGame = () => {
@@ -100,11 +103,16 @@ export default function Home() {
     }, 0);
   };
 
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedCategory = e.target.value as Category;
+    setCategory(selectedCategory);
+    resetGame(selectedCategory, mode);
+  };
+
   const handleModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedMode = e.target.value as Mode;
-
     setMode(selectedMode);
-    resetGame(selectedMode);
+    resetGame(category, selectedMode);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,15 +132,27 @@ export default function Home() {
         <Header />
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
-          <select
-            value={mode}
-            onChange={handleModeChange}
-            className="rounded-md border border-slate-700 bg-[#22384b] px-4 py-2 text-white shadow-[0_0_12px_rgba(0,0,0,0.5)]"
-          >
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard">Hard</option>
-          </select>
+          <div className="flex flex-row md:flex-col gap-4">
+            <select
+              value={category}
+              onChange={handleCategoryChange}
+              className="rounded-md border border-slate-700 bg-[#22384b] px-4 py-2 text-white shadow-[0_0_12px_rgba(0,0,0,0.5)]"
+            >
+              <option value="text">Text</option>
+              <option value="numbers">Numbers</option>
+              <option value="emojis">Emojis</option>
+            </select>
+
+            <select
+              value={mode}
+              onChange={handleModeChange}
+              className="rounded-md border border-slate-700 bg-[#22384b] px-4 py-2 text-white shadow-[0_0_12px_rgba(0,0,0,0.5)]"
+            >
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
 
           <Stats timeLeft={timeLeft} wpm={wpm} accuracy={accuracy} />
         </div>

@@ -16,15 +16,28 @@ export default function TypingArea({
   inputRef,
 }: TypingAreaProps) {
   const renderColoredText = () => {
-    return currentText.split("").map((char, index) => {
+    const targetWords = currentText.split(" ");
+    const currentWordIndex = userInput.split(" ").length - 1;
+    const chunkSize = 10;
+    const currentChunkIndex = Math.floor(currentWordIndex / chunkSize);
+
+    const prevWordsStr = targetWords.slice(0, currentChunkIndex * chunkSize).join(" ");
+    const charStartIndex = prevWordsStr.length > 0 ? prevWordsStr.length + 1 : 0;
+
+    const chunkString = targetWords
+      .slice(currentChunkIndex * chunkSize, (currentChunkIndex + 1) * chunkSize)
+      .join(" ");
+
+    return chunkString.split("").map((char, index) => {
+      const absoluteCharIndex = charStartIndex + index;
       let color = "text-gray-500";
 
-      if (index < userInput.length) {
-        color = userInput[index] === char ? "text-green-600" : "text-red-600";
+      if (absoluteCharIndex < userInput.length) {
+        color = userInput[absoluteCharIndex] === char ? "text-green-600" : "text-red-600";
       }
 
       return (
-        <span key={index} className={color}>
+        <span key={absoluteCharIndex} className={color}>
           {char}
         </span>
       );

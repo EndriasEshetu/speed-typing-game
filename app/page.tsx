@@ -57,6 +57,27 @@ export default function Home() {
       ? Math.round((correctChars / userInput.length) * 100)
       : 0;
 
+  const targetWords = currentText.split(" ");
+  const typedWords = userInput.split(" ");
+
+  let weightedScore = 0;
+  for (let i = 0; i < typedWords.length; i++) {
+    const typedWord = typedWords[i];
+    const targetWord = targetWords[i];
+
+    if (!targetWord) break;
+
+    const isCompleted = i < typedWords.length - 1 || isFinished;
+
+    if (isCompleted && typedWord === targetWord) {
+      const len = targetWord.length;
+      if (len >= 1 && len <= 3) weightedScore += 1;
+      else if (len >= 4 && len <= 6) weightedScore += 2;
+      else if (len >= 7 && len <= 9) weightedScore += 3;
+      else if (len >= 10) weightedScore += 5;
+    }
+  }
+
   const resetGame = (nextMode: Mode = mode) => {
     setUserInput("");
     setTimeLeft(60);
@@ -141,7 +162,7 @@ export default function Home() {
           </button>
         )}
 
-        {isFinished && <ResultCard wpm={wpm} accuracy={accuracy} />}
+        {isFinished && <ResultCard wpm={wpm} accuracy={accuracy} weightedScore={weightedScore} />}
       </section>
     </main>
   );

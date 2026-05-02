@@ -4,6 +4,8 @@ A feature-rich, dynamic speed typing test application built with Next.js, React,
 
 Developed by **Endrias Eshetu**.
 
+🚀 **Play it Live:** [https://endrias-speedtyping.netlify.app/](https://endrias-speedtyping.netlify.app/)
+
 ## Features
 
 - **Live Feedback:** Get real-time green/red highlights as you type to instantly see your mistakes and correct keystrokes.

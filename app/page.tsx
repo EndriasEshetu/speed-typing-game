@@ -3,9 +3,11 @@
 import { useEffect, useState, useRef } from "react";
 import { testData } from "../data/paragraphs";
 import Header from "../components/Header";
+import Navbar from "../components/Navbar";
 import Stats from "../components/Stats";
 import TypingArea from "../components/TypingArea";
 import ResultCard from "../components/ResultCard";
+import Footer from "../components/Footer";
 
 type Category = "text" | "numbers" | "emojis";
 type Mode = "easy" | "medium" | "hard";
@@ -127,8 +129,10 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-[#496781] flex items-center justify-center px-4 py-10">
-      <section className="w-full max-w-4xl bg-[#203547] rounded-3xl shadow-xl p-8">
+    <div className="min-h-screen bg-[#496781] flex flex-col">
+      <Navbar />
+      <main className="flex-grow flex flex-col items-center justify-center px-4 py-10">
+        <section className="w-full max-w-4xl bg-[#203547] rounded-3xl shadow-xl p-8 mb-4">
         <Header />
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
@@ -183,7 +187,10 @@ export default function Home() {
         )}
 
         {isFinished && <ResultCard wpm={wpm} accuracy={accuracy} weightedScore={weightedScore} />}
-      </section>
-    </main>
+        </section>
+      </main>
+      
+      <Footer />
+    </div>
   );
 }

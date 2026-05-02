@@ -3,6 +3,8 @@ type TypingAreaProps = {
   userInput: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isFinished: boolean;
+  hasStarted: boolean;
+  inputRef: React.RefObject<HTMLInputElement | null>;
 };
 
 export default function TypingArea({
@@ -10,6 +12,8 @@ export default function TypingArea({
   userInput,
   onChange,
   isFinished,
+  hasStarted,
+  inputRef,
 }: TypingAreaProps) {
   const renderColoredText = () => {
     return currentText.split("").map((char, index) => {
@@ -34,12 +38,13 @@ export default function TypingArea({
       </div>
 
       <input
+        ref={inputRef}
         type="text"
         value={userInput}
         onChange={onChange}
-        disabled={isFinished}
-        placeholder={isFinished ? "Test finished!" : "Start typing here..."}
-        className="rounded-md border border-slate-700 bg-[#22384b] px-6 md:px-10 py-8 md:py-10 text-white text-xl md:text-3xl shadow-[0_0_24px_rgba(0,0,0,0.5)]"
+        disabled={isFinished || !hasStarted}
+        placeholder={isFinished ? "Test finished!" : (!hasStarted ? "Click START to begin..." : "Start typing here...")}
+        className="rounded-md border border-slate-700 bg-[#22384b] px-6 md:px-10 py-8 md:py-10 text-white text-xl md:text-3xl shadow-[0_0_24px_rgba(0,0,0,0.5)] disabled:opacity-50"
       />
     </div>
   );

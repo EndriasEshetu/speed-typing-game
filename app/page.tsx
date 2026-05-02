@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { paragraphs } from "../data/paragraphs";
 import Header from "../components/Header";
 import Stats from "../components/Stats";
@@ -22,6 +22,9 @@ export default function Home() {
   const [timeLeft, setTimeLeft] = useState(60);
   const [isRunning, setIsRunning] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!isRunning) return;
@@ -59,7 +62,21 @@ export default function Home() {
     setTimeLeft(60);
     setIsRunning(false);
     setIsFinished(false);
+    setHasStarted(false);
     setCurrentText(getRandomText(nextMode));
+  };
+
+  const startGame = () => {
+    setHasStarted(true);
+    setIsRunning(true);
+    setTimeLeft(60);
+    setUserInput("");
+    setIsFinished(false);
+    
+    // Focus the input automatically after state updates
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
   };
 
   const handleModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -70,7 +87,7 @@ export default function Home() {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!isRunning) setIsRunning(true);
+    if (!hasStarted) return;
 
     setUserInput(e.target.value);
 
@@ -104,14 +121,25 @@ export default function Home() {
           userInput={userInput}
           onChange={handleInputChange}
           isFinished={isFinished}
+          hasStarted={hasStarted}
+          inputRef={inputRef}
         />
 
-        <button
-          onClick={() => resetGame()}
-          className="mt-6 w-full bg-[#22384b] hover:bg-[#496781] text-white px-4 py-3 rounded-xl font-semibold transition shadow-[0_0_24px_rgba(0,0,0,0.5)]"
-        >
-          Restart Test
-        </button>
+        {!hasStarted ? (
+          <button
+            onClick={startGame}
+            className="mt-6 w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-xl font-semibold transition shadow-[0_0_24px_rgba(0,0,0,0.5)]"
+          >
+            START
+          </button>
+        ) : (
+          <button
+            onClick={() => resetGame()}
+            className="mt-6 w-full bg-[#22384b] hover:bg-[#496781] text-white px-4 py-3 rounded-xl font-semibold transition shadow-[0_0_24px_rgba(0,0,0,0.5)]"
+          >
+            Restart Test
+          </button>
+        )}
 
         {isFinished && <ResultCard wpm={wpm} accuracy={accuracy} />}
       </section>

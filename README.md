@@ -1,32 +1,46 @@
 # Speed Typing Game
 
-A simple typing practice game built with Next.js. Pick a difficulty, type the paragraph as fast and accurately as you can, and track your WPM and accuracy in real time.
+A feature-rich, dynamic speed typing test application built with Next.js, React, and Tailwind CSS. Practice your typing speed with varying difficulties, track your accuracy in real-time, and challenge yourself with different modes like numbers and emojis!
+
+Developed by **Endrias Eshetu**.
 
 ## Features
 
-- Difficulty selector with easy, medium, and hard paragraphs
-- Live WPM and accuracy tracking
-- Timer-based typing test
-- Restart and results summary
+- **Live Feedback:** Get real-time green/red highlights as you type to instantly see your mistakes and correct keystrokes.
+- **Multiple Categories:** Choose between typing standard **Text**, **Numbers**, or even **Emojis** to test different keyboard skills.
+- **Adjustable Difficulty:** Every category offers Easy, Medium, and Hard variations.
+- **Single-Line Typing Mode:** Text is elegantly displayed in 10-word chunks. As you type, the window slides forward automatically, keeping your focus completely on the active line rather than overwhelming you with a wall of text.
+- **Manual Start & Timer Control:** The test won't start until you're ready. Click "START" to begin the 60-second countdown timer. 
+- **Advanced Scoring:**
+  - **WPM (Words Per Minute):** Standard typing speed calculation.
+  - **Accuracy:** Percentage of correctly typed characters.
+  - **Weighted Score:** A custom scoring metric that rewards you more for correctly completing longer, more complex words.
+- **Custom UI:** A polished dark-mode aesthetic with custom Navbars, Footers, and responsive layouts.
 
 ## Getting Started
 
-Install dependencies and start the development server:
+1. Clone the repository.
+2. Install the dependencies:
 
 ```bash
 npm install
+```
+
+3. Run the development server:
+
+```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:3000](http://localhost:3000) with your browser to play the game.
 
 ## Project Structure
 
-- `app/` - App Router pages, layout, and global styles
-- `components/` - UI components for the game
-- `data/` - Paragraph data grouped by difficulty
-- `public/` - Static assets
+- `app/` - Next.js App Router, global layout, and the main page logic (`page.tsx`)
+- `components/` - Modular React UI components (`Navbar`, `Header`, `TypingArea`, `Stats`, `ResultCard`, `Footer`)
+- `data/` - Static test data categorized by test type and difficulty (`paragraphs.ts`)
+- `public/` - Static assets, including custom logos and favicons.
 
-## Notes
+## License
 
-The app uses a custom icon in `app/icon.svg` so the default Next.js logo does not appear in the browser tab.
+&copy; Speed Typing Game. All rights reserved.
